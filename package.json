@@ -74,6 +74,9 @@
       "last 1 safari version"
     ]
   },
+  "resolutions": {
+    "fraction.js": "4.1.1"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
