@@ -53,7 +53,7 @@ class FontBar extends Component<Props, State> {
     }
     // console.log(value, this.props.selectedItems);
     const selectedTexts = this.props.selectedItems.filter(
-      item => item.data.type === 'text' || 'freetext'
+      item => item.data.type === 'text' || item.data.type === 'freetext'
     );
     selectedTexts.forEach(item => {
       const _textItem = item.firstChild as PointText;
