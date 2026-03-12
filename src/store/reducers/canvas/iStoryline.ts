@@ -1,5 +1,5 @@
 import { ActionType } from '../../../types';
-import { iStoryline } from 'i-storyline-js';
+import iStoryline from 'i-storyline-js';
 import { StoryStore } from '../../../utils/storyStore';
 
 const initialState = {
