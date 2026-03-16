@@ -19,14 +19,21 @@ export default (state = initialState, action: ActionType) => {
         storyLayouter: _iStoryliner,
         storyStore: new StoryStore()
       };
-    case 'LOAD_STORYJSON':
+    case 'LOAD_STORYJSON': {
       const { storyName, storyJson } = action.payload;
-      const graph = _iStoryliner.load(storyJson);
+      // iStoryline.loadJSON is async, but Story.loadJSON (called inside it) runs
+      // parseJSONFile synchronously with no await statements. Calling it without
+      // await populates _story immediately; _layout() then builds the graph
+      // synchronously. Using 'any' cast is necessary since Redux reducers must
+      // be synchronous and the library does not expose a synchronous load API.
+      (_iStoryliner as any)._story.loadJSON(storyJson);
+      const graph = (_iStoryliner as any)._layout();
       return {
         storyName: storyName,
         storyLayouter: _iStoryliner,
         storyStore: new StoryStore(graph)
       };
+    }
     case 'BEND_STORYLINES': {
       const { args } = action.payload;
       if (args === null) return state;

@@ -2,7 +2,7 @@
 const { override, fixBabelImports, addLessLoader } = require("customize-cra");
 const darkTheme = require("@ant-design/dark-theme");
 
-module.exports = override(
+const webpackOverride = override(
   fixBabelImports("import", {
     libraryName: "antd",
     libraryDirectory: "es",
@@ -50,3 +50,15 @@ module.exports = override(
   })
 
 );
+
+module.exports = {
+  webpack: webpackOverride,
+  jest: function(config) {
+    // Allow i-storyline-js (which uses ES module syntax) to be transformed by Babel
+    config.transformIgnorePatterns = [
+      '[/\\\\]node_modules[/\\\\](?!i-storyline-js/).+\\.(js|jsx|ts|tsx)$',
+      '^.+\\.module\\.(css|sass|scss)$',
+    ];
+    return config;
+  }
+};
