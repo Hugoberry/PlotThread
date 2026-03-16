@@ -8,7 +8,13 @@ import {
   getToolState,
   getVisualObjects
 } from '../../store/selectors';
-import { addVisualObject, deselectVisualObjects } from '../../store/actions';
+import {
+  addVisualObject,
+  deselectVisualObjects,
+  loadStoryJson,
+  setTool,
+  cleanVisualObjects
+} from '../../store/actions';
 import { view } from 'paper';
 import UtilCanvas from './UtilCanvas';
 
@@ -25,7 +31,11 @@ const mapDispatchToProps = (dispatch: DispatchType) => {
   return {
     addVisualObject: (type: string, cfg: any) =>
       dispatch(addVisualObject(type, cfg)),
-    resetVisualObjects: () => dispatch(deselectVisualObjects())
+    resetVisualObjects: () => dispatch(deselectVisualObjects()),
+    openJson: (name: string, story: any) =>
+      dispatch(loadStoryJson(name, story)),
+    activateTool: (toolName: string) => dispatch(setTool(toolName, true)),
+    cleanRenderQueue: () => dispatch(cleanVisualObjects())
   };
 };
 
@@ -70,6 +80,15 @@ class DrawCanvas extends Component<Props, State> {
     view.onClick = (e: paper.MouseEvent) => {
       this.props.resetVisualObjects();
     };
+    // Auto-load Frozen.json to show the default rendering on startup
+    this.props.activateTool('Open');
+    this.props.cleanRenderQueue();
+    fetch('json/Frozen.json')
+      .then(response => response.json())
+      .then(story => {
+        this.props.openJson('Frozen.json', story);
+      })
+      .catch(err => console.error('Failed to load Frozen.json:', err));
   }
 
   render() {
