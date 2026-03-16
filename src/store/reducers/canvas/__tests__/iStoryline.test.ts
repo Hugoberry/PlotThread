@@ -72,3 +72,51 @@ describe('iStoryline reducer with sample JSON files', () => {
     });
   });
 });
+
+describe('Frozen.json rendering validation', () => {
+  const FROZEN_CHARACTERS = [
+    'Duke', 'Elsa', 'K', 'Q', 'Anna', 'Hans', 'Olaf', 'Tolls', 'Mashmellow', 'Sven', 'Kristof',
+  ];
+
+  let frozenState: ReturnType<typeof iStorylineReducer>;
+
+  beforeAll(() => {
+    const action = {
+      type: 'LOAD_STORYJSON',
+      payload: { storyName: 'Frozen', storyJson: Frozen },
+    };
+    frozenState = iStorylineReducer(undefined, action as any);
+  });
+
+  it('renders all 11 Frozen characters', () => {
+    expect(frozenState.storyStore.names.length).toBe(FROZEN_CHARACTERS.length);
+    FROZEN_CHARACTERS.forEach(character => {
+      expect(frozenState.storyStore.names).toContain(character);
+    });
+  });
+
+  it('produces one storyline path per character', () => {
+    expect(frozenState.storyStore.paths.length).toBe(FROZEN_CHARACTERS.length);
+  });
+
+  it('generates valid coordinate data for each character storyline', () => {
+    frozenState.storyStore.paths.forEach((storyline: any[], index: number) => {
+      expect(Array.isArray(storyline)).toBe(true);
+      expect(storyline.length).toBeGreaterThan(0);
+
+      storyline.forEach((segment: any[]) => {
+        expect(Array.isArray(segment)).toBe(true);
+        expect(segment.length).toBeGreaterThan(0);
+
+        segment.forEach((node: number[]) => {
+          expect(Array.isArray(node)).toBe(true);
+          expect(node.length).toBe(2);
+          expect(typeof node[0]).toBe('number');
+          expect(typeof node[1]).toBe('number');
+          expect(isFinite(node[0])).toBe(true);
+          expect(isFinite(node[1])).toBe(true);
+        });
+      });
+    });
+  });
+});
